@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEI パラメータ QC七つ道具 分析ダッシュボード</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="qc_dashboard.css">
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <h1>BEI パラメータ QC分析</h1>
+    <p class="subtitle">QC七つ道具による設備寄与度の定量的可視化</p>
+    <nav class="tool-nav" id="toolNav"></nav>
+  </div>
+</header>
+<main id="app">
+  <!-- 1. パレート図 -->
+  <section class="card" id="sec-pareto">
+    <div class="card-header"><span class="tool-num">①</span> パレート図 <span class="tool-label">Pareto Chart</span></div>
+    <p class="card-desc">各設備の基準一次エネルギー寄与度を降順に並べ、累積比率で「重点管理すべき設備」を特定する。</p>
+    <div class="chart-controls">
+      <label>建物用途: <select id="paretoSelect"></select></label>
+    </div>
+    <div class="chart-wrap"><canvas id="paretoChart"></canvas></div>
+    <div class="insight" id="paretoInsight"></div>
+  </section>
+
+  <!-- 2. 特性要因図 -->
+  <section class="card" id="sec-fishbone">
+    <div class="card-header"><span class="tool-num">②</span> 特性要因図 <span class="tool-label">Cause & Effect (Ishikawa)</span></div>
+    <p class="card-desc">BEI悪化（＞1.0）の要因を設備別に分解し、各パラメータの因果関係を魚の骨図で表現する。</p>
+    <div class="fishbone-wrap"><svg id="fishboneSvg" viewBox="0 0 1200 600"></svg></div>
+  </section>
+
+  <!-- 3. チェックシート -->
+  <section class="card" id="sec-check">
+    <div class="card-header"><span class="tool-num">③</span> チェックシート <span class="tool-label">Check Sheet</span></div>
+    <p class="card-desc">建物用途別に、各設備パラメータの「必須 / 重要 / 間引可」を判定。簡易計算時の入力省略判断に使用。</p>
+    <div class="table-wrap"><table id="checkTable"></table></div>
+  </section>
+
+  <!-- 4. ヒストグラム -->
+  <section class="card" id="sec-histogram">
+    <div class="card-header"><span class="tool-num">④</span> ヒストグラム <span class="tool-label">Histogram</span></div>
+    <p class="card-desc">全室用途の基準一次エネルギー消費量の分布を可視化し、外れ値（高エネルギー室用途）を特定する。</p>
+    <div class="chart-wrap"><canvas id="histogramChart"></canvas></div>
+  </section>
+
+  <!-- 5. 散布図 -->
+  <section class="card" id="sec-scatter">
+    <div class="card-header"><span class="tool-num">⑤</span> 散布図 <span class="tool-label">Scatter Diagram</span></div>
+    <p class="card-desc">空調基準値 vs 換気基準値の関係を室用途ごとにプロットし、相関パターンを分析する。</p>
+    <div class="chart-wrap"><canvas id="scatterChart"></canvas></div>
+  </section>
+
+  <!-- 6. 管理図 -->
+  <section class="card" id="sec-control">
+    <div class="card-header"><span class="tool-num">⑥</span> 管理図 <span class="tool-label">Control Chart</span></div>
+    <p class="card-desc">地域別の空調基準値の変動を管理図で表示し、管理限界（±2σ）を超える地域を警告する。</p>
+    <div class="chart-controls">
+      <label>建物用途: <select id="controlSelect"></select></label>
+    </div>
+    <div class="chart-wrap"><canvas id="controlChart"></canvas></div>
+  </section>
+
+  <!-- 7. 層別 -->
+  <section class="card" id="sec-stratify">
+    <div class="card-header"><span class="tool-num">⑦</span> 層別 <span class="tool-label">Stratification</span></div>
+    <p class="card-desc">建物用途ごとの設備エネルギー構成を積み上げ棒グラフで比較し、用途別の特徴を層別分析する。</p>
+    <div class="chart-wrap chart-wide"><canvas id="stratifyChart"></canvas></div>
+    <div class="insight" id="stratifyInsight"></div>
+  </section>
+</main>
+<footer><p>builelib BEI QC Analysis Dashboard — Data source: common_room_standard_value.json</p></footer>
+<script src="qc_dashboard.js"></script>
+</body>
+</html>
