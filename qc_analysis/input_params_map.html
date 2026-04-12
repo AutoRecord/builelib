@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BEI 入力パラメータ全体マップ — 1物件イメージ図</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0e1e;--card:#111827;--border:#1e293b;--txt:#e2e8f0;--dim:#64748b;
+--ac:#818cf8;--be:#f472b6;--v:#2dd4bf;--l:#fbbf24;--hw:#fb923c;--ev:#4ade80;--pv:#38bdf8;--cg:#a78bfa;
+--glass:rgba(255,255,255,.03)}
+body{font-family:'Inter','Noto Sans JP',system-ui,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;padding:1rem}
+h1{text-align:center;font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--ac),var(--be));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin:.8rem 0 .3rem}
+.subtitle{text-align:center;color:var(--dim);font-size:.82rem;margin-bottom:1.2rem}
+.legend{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin-bottom:1.2rem}
+.legend span{font-size:.7rem;padding:3px 10px;border-radius:12px;cursor:pointer;transition:.2s;border:1px solid transparent}
+.legend span:hover{transform:scale(1.08)}
+.legend span.active{border-color:currentColor;box-shadow:0 0 8px currentColor}
+.building-img{display:flex;justify-content:center;margin-bottom:1.5rem;position:relative}
+.building-svg{max-width:900px;width:100%}
+
+/* Cards grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem;max-width:1400px;margin:0 auto}
+.sec{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1rem 1.2rem;transition:.3s;position:relative;overflow:hidden}
+.sec::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.sec:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.sec h2{font-size:.95rem;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+.sec h2 .badge{font-size:.65rem;padding:2px 8px;border-radius:8px;font-weight:600}
+.sec h2 .form-id{font-size:.68rem;color:var(--dim);margin-left:auto;font-weight:400}
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+th{text-align:left;color:var(--dim);font-weight:500;padding:3px 4px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:3px 4px;border-bottom:1px solid rgba(255,255,255,.02)}
+td:first-child{color:#94a3b8;white-space:nowrap;width:35%}
+td:nth-child(2){font-weight:500}
+td:nth-child(3){color:var(--dim);font-size:.65rem}
+.val{color:#c4b5fd;font-family:'Inter',monospace}
+.req{color:#f87171;font-size:.6rem}
+.opt{color:#475569;font-size:.6rem}
+.cnt{text-align:center;color:var(--dim);font-size:.7rem;padding:.3rem;background:rgba(255,255,255,.02);border-radius:6px;margin-top:.4rem}
+
+/* Section colors */
+.sec-bl::before{background:linear-gradient(90deg,#94a3b8,#64748b)}.sec-bl h2 .badge{background:#334155;color:#94a3b8}
+.sec-be::before{background:linear-gradient(90deg,var(--be),#ec4899)}.sec-be h2 .badge{background:#831843;color:var(--be)}
+.sec-ac::before{background:linear-gradient(90deg,var(--ac),#6366f1)}.sec-ac h2 .badge{background:#312e81;color:var(--ac)}
+.sec-v::before{background:linear-gradient(90deg,var(--v),#14b8a6)}.sec-v h2 .badge{background:#134e4a;color:var(--v)}
+.sec-l::before{background:linear-gradient(90deg,var(--l),#f59e0b)}.sec-l h2 .badge{background:#78350f;color:var(--l)}
+.sec-hw::before{background:linear-gradient(90deg,var(--hw),#ea580c)}.sec-hw h2 .badge{background:#7c2d12;color:var(--hw)}
+.sec-ev::before{background:linear-gradient(90deg,var(--ev),#22c55e)}.sec-ev h2 .badge{background:#14532d;color:var(--ev)}
+.sec-pv::before{background:linear-gradient(90deg,var(--pv),#0ea5e9)}.sec-pv h2 .badge{background:#0c4a6e;color:var(--pv)}
+.sec-cg::before{background:linear-gradient(90deg,var(--cg),#7c3aed)}.sec-cg h2 .badge{background:#4c1d95;color:var(--cg)}
+
+.stats{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;margin:1.2rem auto;max-width:1400px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:.6rem 1.2rem;text-align:center}
+.stat-val{font-size:1.4rem;font-weight:800}
+.stat-lbl{font-size:.68rem;color:var(--dim)}
+
+footer{text-align:center;color:var(--dim);font-size:.7rem;padding:2rem 0 1rem;border-top:1px solid var(--border);margin-top:2rem}
+</style>
+</head>
+<body>
+
+<h1>BEI 入力パラメータ 全体マップ</h1>
+<p class="subtitle">WEBPRO JSON Schema (webproJsonSchema.json) から抽出 — 典型的事務所ビル 1物件のイメージ</p>
+
+<div class="stats" id="stats"></div>
+<div class="legend" id="legend"></div>
+<div class="grid" id="grid"></div>
+<footer>Source: builelib/src/builelib/input/inputdata/webproJsonSchema.json — 全18様式・約150項目</footer>
+
+<script>
+const SECTIONS=[
+{id:'bl',name:'建物基本情報',form:'様式BL',color:'#94a3b8',impact:'共通',
+ params:[
+  {id:'BL-1',name:'建築物の名称',key:'Name',type:'string',ex:'○○ビル',req:false},
+  {id:'BL-2',name:'都道府県',key:'Prefecture',type:'string',ex:'東京都',req:false},
+  {id:'BL-3',name:'市区町村',key:'City',type:'string',ex:'千代田区',req:false},
+  {id:'BL-4',name:'丁目番地',key:'Address',type:'string',ex:'丸の内1-1',req:false},
+  {id:'BL-5',name:'地域区分',key:'Region',type:'enum 1-8',ex:'6',req:true},
+  {id:'BL-6',name:'年間日射地域区分',key:'AnnualSolarRegion',type:'enum A1-A5',ex:'A3',req:false},
+  {id:'BL-7',name:'延べ面積 [m²]',key:'BuildingFloorArea',type:'number',ex:'3000',req:false},
+  {id:'BL-8',name:'DHC換算係数(冷熱)',key:'Coefficient_DHC.Cooling',type:'number',ex:'1.36',req:false},
+  {id:'BL-9',name:'DHC換算係数(温熱)',key:'Coefficient_DHC.Heating',type:'number',ex:'1.36',req:false},
+]},
+{id:'rm',name:'室情報',form:'様式RM',color:'#94a3b8',impact:'共通',
+ params:[
+  {id:'RM-3',name:'建物用途',key:'buildingType',type:'enum(9種)',ex:'事務所等',req:true},
+  {id:'RM-4',name:'室用途',key:'roomType',type:'string',ex:'事務室',req:true},
+  {id:'RM-5',name:'階高 [m]',key:'floorHeight',type:'number',ex:'4.0',req:false},
+  {id:'RM-6',name:'天井高 [m]',key:'ceilingHeight',type:'number',ex:'2.7',req:false},
+  {id:'RM-7',name:'床面積 [m²]',key:'roomArea',type:'number',ex:'500',req:true},
+  {id:'RM-9',name:'ゾーン面積 [m²]',key:'zone.zoneArea',type:'number',ex:'250',req:false},
+  {id:'RM-10',name:'モデル建物',key:'modelBuildingType',type:'string',ex:'null',req:false},
+  {id:'RM-11',name:'建物群名称',key:'buildingGroup',type:'string',ex:'null',req:false},
+]},
+{id:'be1',name:'外皮仕様(壁・窓配置)',form:'様式BE1',color:'#f472b6',impact:'空調60%',
+ params:[
+  {id:'BE1-4',name:'空調の有無',key:'isAirconditioned',type:'有/無',ex:'有',req:true},
+  {id:'BE1-5',name:'方位',key:'Direction',type:'enum(10方位)',ex:'南',req:true},
+  {id:'BE1-6',name:'外皮面積 [m²]',key:'EnvelopeArea',type:'number',ex:'120',req:false},
+  {id:'BE1-7',name:'外皮の幅 [m]',key:'EnvelopeWidth',type:'number',ex:'20',req:false},
+  {id:'BE1-8',name:'外皮の高さ [m]',key:'EnvelopeHeight',type:'number',ex:'3.5',req:false},
+  {id:'BE1-9',name:'断熱仕様名称',key:'WallSpec',type:'string',ex:'W-1',req:true},
+  {id:'BE1-10',name:'外壁の種類',key:'WallType',type:'enum(4種)',ex:'日の当たる外壁',req:true},
+  {id:'BE1-11',name:'開口部仕様名称',key:'WindowID',type:'string',ex:'WIN-1',req:false},
+  {id:'BE1-12',name:'建具等個数',key:'WindowNumber',type:'number',ex:'10',req:false},
+  {id:'BE1-13',name:'ブラインドの有無',key:'isBlind',type:'有/無',ex:'有',req:false},
+  {id:'BE1-14',name:'日除けの名称',key:'EavesID',type:'string',ex:'SH-1',req:false},
+]},
+{id:'be2',name:'壁体断熱仕様',form:'様式BE2',color:'#f472b6',impact:'空調',
+ params:[
+  {id:'BE2-2',name:'構造種別',key:'structureType',type:'enum(4種)',ex:'鉄筋コンクリート造等',req:true},
+  {id:'BE2-3',name:'日射吸収率',key:'solarAbsorptionRatio',type:'0-1',ex:'0.8',req:false},
+  {id:'BE2-入力',name:'入力方法',key:'inputMethod',type:'enum(3種)',ex:'熱貫流率を入力',req:true},
+  {id:'BE2-4',name:'断熱材の種類',key:'materialID',type:'string',ex:'A種XPS3種',req:false},
+  {id:'BE2-5',name:'熱伝導率 [W/mK]',key:'conductivity',type:'number',ex:'0.028',req:false},
+  {id:'BE2-6',name:'厚み [mm]',key:'thickness',type:'number',ex:'50',req:false},
+  {id:'BE2-10',name:'熱貫流率 U値 [W/m²K]',key:'Uvalue',type:'number',ex:'0.76',req:true},
+  {id:'BE2-7~9',name:'建材構成(層)',key:'layers[]',type:'array',ex:'複数層',req:false},
+]},
+{id:'be3',name:'窓仕様',form:'様式BE3',color:'#f472b6',impact:'空調',
+ params:[
+  {id:'BE3-2',name:'窓面積 [m²]',key:'windowArea',type:'number',ex:'3.6',req:false},
+  {id:'BE3-3',name:'窓の幅 [m]',key:'windowWidth',type:'number',ex:'1.8',req:false},
+  {id:'BE3-4',name:'窓の高さ [m]',key:'windowHeight',type:'number',ex:'2.0',req:false},
+  {id:'BE3-入力',name:'入力方法',key:'inputMethod',type:'enum(3種)',ex:'性能値を入力',req:true},
+  {id:'BE3-5',name:'建具の種類',key:'frameType',type:'enum(5種)',ex:'金属製',req:true},
+  {id:'BE3-6',name:'ガラス建築確認記号',key:'glassID',type:'string',ex:'G01',req:false},
+  {id:'BE3-7',name:'ガラスの層数',key:'layerType',type:'複層/単層',ex:'複層',req:false},
+  {id:'BE3-8',name:'ガラスU値 [W/m²K]',key:'glassUvalue',type:'number',ex:'2.9',req:false},
+  {id:'BE3-9',name:'ガラスI値(日射取得)',key:'glassIvalue',type:'0-1',ex:'0.79',req:false},
+  {id:'BE3-10',name:'窓U値 [W/m²K]',key:'windowUvalue',type:'number',ex:'4.65',req:true},
+  {id:'BE3-11',name:'窓I値(日射取得)',key:'windowIvalue',type:'0-1',ex:'0.69',req:true},
+]},
+{id:'be4',name:'日除け仕様',form:'様式BE4',color:'#f472b6',impact:'空調',
+ params:[
+  {id:'BE4-2',name:'日除け効果係数(冷房)',key:'shadingEffect_C',type:'0-1',ex:'0.7',req:false},
+  {id:'BE4-3',name:'日除け効果係数(暖房)',key:'shadingEffect_H',type:'0-1',ex:'0.9',req:false},
+  {id:'BE4-4~13',name:'日除け形状(x1,x2,x3,y1,y2,y3,zx±,zy±)',key:'x1~zyMinus',type:'number×10',ex:'各寸法',req:false},
+]},
+{id:'ac1',name:'空調ゾーン',form:'様式AC1',color:'#818cf8',impact:'空調60%',
+ params:[
+  {id:'AC1-4',name:'自然換気の有無',key:'isNatualVentilation',type:'有/無',ex:'無',req:false},
+  {id:'AC1-5',name:'冷暖同時供給の有無',key:'isSimultaneousSupply',type:'enum(4種)',ex:'無',req:false},
+  {id:'AC1-6',name:'空調機群(冷房・室負荷)',key:'AHU_cooling_insideLoad',type:'string',ex:'AHU-C1',req:true},
+  {id:'AC1-7',name:'空調機群(冷房・外気負荷)',key:'AHU_cooling_outdoorLoad',type:'string',ex:'AHU-C1',req:false},
+  {id:'AC1-8',name:'空調機群(暖房・室負荷)',key:'AHU_heating_insideLoad',type:'string',ex:'AHU-H1',req:true},
+  {id:'AC1-9',name:'空調機群(暖房・外気負荷)',key:'AHU_heating_outdoorLoad',type:'string',ex:'AHU-H1',req:false},
+]},
+{id:'ac2',name:'熱源機器',form:'様式AC2',color:'#818cf8',impact:'空調60%',
+ params:[
+  {id:'AC2-3',name:'蓄熱の種類',key:'StorageType',type:'enum(3種)',ex:'null',req:false},
+  {id:'AC2-4',name:'蓄熱容量 [MJ]',key:'StorageSize',type:'number',ex:'null',req:false},
+  {id:'AC2-5',name:'台数制御',key:'isStagingControl',type:'有/無',ex:'有',req:true},
+  {id:'AC2-6',name:'熱源機種',key:'HeatsourceType',type:'string',ex:'ターボ冷凍機',req:true},
+  {id:'AC2-7',name:'台数',key:'Number',type:'number',ex:'2',req:true},
+  {id:'AC2-8~10',name:'送水温度(夏/中間/冬)',key:'SupplyWaterTemp*',type:'number×3',ex:'7/10/45',req:false},
+  {id:'AC2-11',name:'定格能力 [kW]',key:'HeatsourceRatedCapacity',type:'number',ex:'350',req:true},
+  {id:'AC2-12',name:'主機 定格消費電力 [kW]',key:'HeatsourceRatedPowerConsumption',type:'number',ex:'85',req:true},
+  {id:'AC2-13',name:'主機 定格燃料消費量 [kW]',key:'HeatsourceRatedFuelConsumption',type:'number',ex:'0',req:false},
+  {id:'AC2-14',name:'補機 定格消費電力 [kW]',key:'Heatsource_sub_RatedPowerConsumption',type:'number',ex:'5',req:false},
+  {id:'AC2-15',name:'一次ポンプ 消費電力 [kW]',key:'PrimaryPumpPowerConsumption',type:'number',ex:'7.5',req:false},
+  {id:'AC2-16',name:'一次ポンプ 制御方式',key:'PrimaryPumpContolType',type:'有/無',ex:'有',req:false},
+  {id:'AC2-17',name:'冷却塔 定格能力 [kW]',key:'CoolingTowerCapacity',type:'number',ex:'450',req:false},
+  {id:'AC2-18',name:'冷却塔 ファン消費電力',key:'CoolingTowerFanPowerConsumption',type:'number',ex:'5.5',req:false},
+  {id:'AC2-19',name:'冷却塔 ポンプ消費電力',key:'CoolingTowerPumpPowerConsumption',type:'number',ex:'7.5',req:false},
+  {id:'AC2-20',name:'冷却塔 制御方式',key:'CoolingTowerContolType',type:'有/無',ex:'無',req:false},
+]},
+{id:'ac3',name:'二次ポンプ',form:'様式AC3',color:'#818cf8',impact:'空調',
+ params:[
+  {id:'AC3-3',name:'設計温度差 [℃]',key:'TemperatureDifference',type:'number',ex:'5',req:true},
+  {id:'AC3-4',name:'台数制御の有無',key:'isStagingControl',type:'有/無',ex:'有',req:true},
+  {id:'AC3-5',name:'台数',key:'Number',type:'number',ex:'2',req:true},
+  {id:'AC3-6',name:'定格流量 [L/min]',key:'RatedWaterFlowRate',type:'number',ex:'500',req:true},
+  {id:'AC3-7',name:'定格消費電力 [kW]',key:'RatedPowerConsumption',type:'number',ex:'5.5',req:true},
+  {id:'AC3-8',name:'制御方式',key:'ContolType',type:'enum(3種)',ex:'回転数制御',req:false},
+  {id:'AC3-9',name:'最小流量比',key:'MinOpeningRate',type:'number',ex:'0.3',req:false},
+]},
+{id:'ac4',name:'空調機(AHU/FCU)',form:'様式AC4',color:'#818cf8',impact:'空調60%',
+ params:[
+  {id:'AC4-2',name:'構成機種',key:'Type',type:'enum(7種)',ex:'空調機',req:true},
+  {id:'AC4-3',name:'台数',key:'Number',type:'number',ex:'2',req:true},
+  {id:'AC4-4',name:'定格能力(冷却) [kW]',key:'RatedCapacityCooling',type:'number',ex:'100',req:false},
+  {id:'AC4-5',name:'定格能力(暖房) [kW]',key:'RatedCapacityHeating',type:'number',ex:'80',req:false},
+  {id:'AC4-6',name:'送風機種類',key:'FanType',type:'enum(6種)',ex:'給気',req:false},
+  {id:'AC4-7',name:'設計風量 [m³/h]',key:'FanAirVolume',type:'number',ex:'12000',req:false},
+  {id:'AC4-8',name:'送風機 消費電力 [kW]',key:'FanPowerConsumption',type:'number',ex:'5.5',req:true},
+  {id:'AC4-9',name:'風量制御方式',key:'FanControlType',type:'enum(3種)',ex:'回転数制御',req:true},
+  {id:'AC4-10',name:'最小風量比',key:'FanMinOpeningRate',type:'number',ex:'0.3',req:false},
+  {id:'AC4-10b',name:'全熱交換器の有無',key:'isAirHeatExchanger',type:'enum(5種)',ex:'有',req:false},
+  {id:'AC4-11',name:'全熱交換効率(冷房)',key:'AirHeatExchangeRatioCooling',type:'%',ex:'65',req:false},
+  {id:'AC4-12',name:'全熱交換効率(暖房)',key:'AirHeatExchangeRatioHeating',type:'%',ex:'70',req:false},
+  {id:'AC4-13',name:'有効換気量率',key:'AirHeatExchangerEffectiveAirVolumeRatio',type:'%',ex:'85',req:false},
+  {id:'AC4-14',name:'自動換気切替機能',key:'AirHeatExchangerControl',type:'有/無',ex:'有',req:false},
+  {id:'AC4-15',name:'ローター消費電力 [kW]',key:'AirHeatExchangerPowerConsumption',type:'number',ex:'0.2',req:false},
+  {id:'AC4-16',name:'外気冷房制御の有無',key:'isEconomizer',type:'有/無',ex:'有',req:false},
+  {id:'AC4-17',name:'外気冷房 最大外気取入量',key:'EconomizerMaxAirVolume',type:'number',ex:'15000',req:false},
+  {id:'AC4-18',name:'予熱時外気取入量制御',key:'isOutdoorAirCut',type:'有/無',ex:'有',req:false},
+  {id:'AC4-19',name:'二次ポンプ群(冷房)',key:'Pump_cooling',type:'string',ex:'P-C1',req:false},
+  {id:'AC4-20',name:'二次ポンプ群(暖房)',key:'Pump_heating',type:'string',ex:'P-H1',req:false},
+  {id:'AC4-21',name:'熱源群(冷房)',key:'HeatSource_cooling',type:'string',ex:'HS-C1',req:true},
+  {id:'AC4-22',name:'熱源群(暖房)',key:'HeatSource_heating',type:'string',ex:'HS-H1',req:true},
+]},
+{id:'v1',name:'換気室割当',form:'様式V1',color:'#2dd4bf',impact:'換気12%',
+ params:[
+  {id:'V1-3',name:'換気方式',key:'VentilationType',type:'一種/二種/三種',ex:'一種換気',req:false},
+  {id:'V1-4',name:'機器の種類',key:'UnitType',type:'給気/排気/空調/循環',ex:'給気',req:true},
+]},
+{id:'v2',name:'換気機器',form:'様式V2',color:'#2dd4bf',impact:'換気12%',
+ params:[
+  {id:'V2-2',name:'台数',key:'Number',type:'number',ex:'2',req:true},
+  {id:'V2-3',name:'設計風量 [m³/h]',key:'FanAirVolume',type:'number',ex:'3000',req:true},
+  {id:'V2-4',name:'定格電動機出力 [kW]',key:'MoterRatedPower',type:'number',ex:'2.2',req:true},
+  {id:'V2-5',name:'定格消費電力 [kW]',key:'PowerConsumption',type:'number',ex:'1.8',req:true},
+  {id:'V2-6',name:'高効率電動機の有無',key:'HighEfficiencyMotor',type:'有/無',ex:'有',req:true},
+  {id:'V2-7',name:'インバータの有無',key:'Inverter',type:'有/無',ex:'有',req:true},
+  {id:'V2-8',name:'送風量制御',key:'AirVolumeControl',type:'enum(3種)',ex:'CO濃度制御',req:true},
+  {id:'V2-9',name:'対象室の用途',key:'VentilationRoomType',type:'enum(4種)',ex:'その他',req:true},
+  {id:'V2-10',name:'必要冷却能力 [kW]',key:'AC_CoolingCapacity',type:'number',ex:'null',req:true},
+  {id:'V2-11',name:'熱源効率(一次換算)',key:'AC_RefEfficiency',type:'number',ex:'null',req:true},
+  {id:'V2-12',name:'ポンプ消費電力 [kW]',key:'AC_PumpPower',type:'number',ex:'null',req:true},
+]},
+{id:'l',name:'照明',form:'様式L',color:'#fbbf24',impact:'照明25%',
+ params:[
+  {id:'L-4',name:'室の間口 [m]',key:'roomWidth',type:'number',ex:'15',req:false},
+  {id:'L-5',name:'室の奥行 [m]',key:'roomDepth',type:'number',ex:'20',req:false},
+  {id:'L-6',name:'器具高さ [m]',key:'unitHeight',type:'number',ex:'2.5',req:false},
+  {id:'L-7',name:'室指数 [-]',key:'roomIndex',type:'number',ex:'2.5',req:false},
+  {id:'L-9',name:'定格消費電力 [W/台]',key:'RatedPower',type:'number',ex:'40',req:true},
+  {id:'L-10',name:'台数',key:'Number',type:'number',ex:'50',req:true},
+  {id:'L-11',name:'在室検知制御',key:'OccupantSensingCTRL',type:'enum(4種)',ex:'下限調光方式',req:true},
+  {id:'L-12',name:'明るさ検知制御',key:'IlluminanceSensingCTRL',type:'enum(10種)',ex:'調光方式',req:true},
+  {id:'L-13',name:'タイムスケジュール制御',key:'TimeScheduleCTRL',type:'enum(3種)',ex:'減光方式',req:true},
+  {id:'L-14',name:'初期照度補正機能',key:'InitialIlluminationCorrectionCTRL',type:'enum(5種)',ex:'タイマ方式(LED)',req:true},
+]},
+{id:'hw1',name:'給湯室',form:'様式HW1',color:'#fb923c',impact:'給湯3%',
+ params:[
+  {id:'HW1-3',name:'給湯用途',key:'UsageType',type:'便所/浴室/厨房/その他',ex:'便所',req:true},
+  {id:'HW1-4',name:'給湯システム名称',key:'SystemName',type:'string',ex:'HWS-1',req:true},
+  {id:'HW1-5',name:'節湯器具',key:'HotWaterSavingSystem',type:'enum(3種)',ex:'自動給湯栓',req:true},
+]},
+{id:'hw2',name:'給湯システム',form:'様式HW2',color:'#fb923c',impact:'給湯3%',
+ params:[
+  {id:'HW2-2',name:'給湯用途(機器)',key:'UsageType',type:'enum(4種)',ex:'給湯負荷用',req:false},
+  {id:'HW2-3',name:'熱源機種',key:'HeatSourceType',type:'enum(12種)',ex:'ガス給湯機',req:true},
+  {id:'HW2-4',name:'台数',key:'Number',type:'number',ex:'1',req:true},
+  {id:'HW2-5',name:'定格加熱能力 [kW]',key:'RatedCapacity',type:'number',ex:'50',req:true},
+  {id:'HW2-6',name:'定格消費電力 [kW]',key:'RatedPowerConsumption',type:'number',ex:'0.3',req:true},
+  {id:'HW2-7',name:'定格燃料消費量(高位)',key:'RatedFuelConsumption',type:'number',ex:'60',req:true},
+  {id:'HW2-8',name:'配管保温仕様',key:'InsulationType',type:'enum(4種)',ex:'保温仕様2',req:true},
+  {id:'HW2-9',name:'配管最大口径 [mm]',key:'PipeSize',type:'number',ex:'25',req:true},
+  {id:'HW2-10',name:'太陽熱 集熱面積 [m²]',key:'SolarSystemArea',type:'number',ex:'null',req:false},
+  {id:'HW2-11',name:'太陽熱 方位角',key:'SolarSystemDirection',type:'number',ex:'null',req:false},
+  {id:'HW2-12',name:'太陽熱 傾斜角',key:'SolarSystemAngle',type:'number',ex:'null',req:false},
+]},
+{id:'ev',name:'昇降機',form:'様式EV',color:'#4ade80',impact:'昇降機2%',
+ params:[
+  {id:'EV-3',name:'系統の名称',key:'ElevatorName',type:'string',ex:'EV-1',req:true},
+  {id:'EV-4',name:'台数',key:'Number',type:'number',ex:'2',req:true},
+  {id:'EV-5',name:'積載量 [kg]',key:'LoadLimit',type:'number',ex:'1000',req:true},
+  {id:'EV-6',name:'速度 [m/min]',key:'Velocity',type:'number',ex:'105',req:true},
+  {id:'EV-7',name:'輸送能力係数',key:'TransportCapacityFactor',type:'number',ex:'null',req:false},
+  {id:'EV-速度',name:'速度制御方式',key:'ControlType',type:'enum(5種)',ex:'VVVF(電力回生あり)',req:true},
+]},
+{id:'pv',name:'太陽光発電',form:'様式PV',color:'#38bdf8',impact:'創エネ',
+ params:[
+  {id:'PV-2',name:'パワコン効率',key:'PowerConditionerEfficiency',type:'0-1',ex:'0.94',req:false},
+  {id:'PV-3',name:'太陽電池の種類',key:'CellType',type:'結晶系/他',ex:'結晶系',req:true},
+  {id:'PV-4',name:'アレイ設置方式',key:'ArraySetupType',type:'enum(3種)',ex:'架台設置形',req:true},
+  {id:'PV-5',name:'システム容量 [kW]',key:'ArrayCapacity',type:'number',ex:'50',req:true},
+  {id:'PV-6',name:'方位角 [°]',key:'Direction',type:'0-360',ex:'180',req:true},
+  {id:'PV-7',name:'傾斜角 [°]',key:'Angle',type:'0-180',ex:'20',req:true},
+]},
+{id:'cg',name:'コージェネ',form:'様式CG',color:'#a78bfa',impact:'創エネ',
+ params:[
+  {id:'CG-2',name:'定格発電出力 [kW]',key:'RatedCapacity',type:'number',ex:'25',req:true},
+  {id:'CG-3',name:'台数',key:'Number',type:'number',ex:'1',req:true},
+  {id:'CG-4~6',name:'発電効率(100/75/50%)',key:'PowerGenerationEfficiency_*',type:'number×3',ex:'0.35/0.33/0.28',req:true},
+  {id:'CG-7~9',name:'排熱効率(100/75/50%)',key:'HeatGenerationEfficiency_*',type:'number×3',ex:'0.40/0.42/0.38',req:true},
+  {id:'CG-10~12',name:'排熱利用優先順位(冷/温/給湯)',key:'HeatRecoveryPriority*',type:'enum×3',ex:'1番目/2番目/3番目',req:false},
+  {id:'CG-13',name:'24時間運転の有無',key:'24hourOperation',type:'有/無',ex:'無',req:true},
+  {id:'CG-14',name:'排熱利用系統(冷/温/給湯)',key:'*System',type:'string×3',ex:'HS-C1/HS-H1/HWS-1',req:false},
+]},
+];
+
+// Stats
+const totalParams=SECTIONS.reduce((s,sec)=>s+sec.params.length,0);
+const reqParams=SECTIONS.reduce((s,sec)=>s+sec.params.filter(p=>p.req).length,0);
+const sEl=document.getElementById('stats');
+[
+ {v:SECTIONS.length,l:'様式数(セクション)',c:'#818cf8'},
+ {v:totalParams,l:'入力パラメータ総数',c:'#f472b6'},
+ {v:reqParams,l:'必須項目(★)',c:'#f87171'},
+ {v:totalParams-reqParams,l:'任意項目',c:'#64748b'},
+ {v:'18',l:'JSON定義数',c:'#2dd4bf'},
+].forEach(s=>{
+  const d=document.createElement('div');d.className='stat';
+  d.innerHTML=`<div class="stat-val" style="color:${s.c}">${s.v}</div><div class="stat-lbl">${s.l}</div>`;
+  sEl.appendChild(d);
+});
+
+// Legend
+const cats=[{id:'bl',n:'建物基本',c:'#94a3b8'},{id:'be',n:'外皮(BE)',c:'#f472b6'},{id:'ac',n:'空調(AC)',c:'#818cf8'},
+  {id:'v',n:'換気(V)',c:'#2dd4bf'},{id:'l',n:'照明(L)',c:'#fbbf24'},{id:'hw',n:'給湯(HW)',c:'#fb923c'},
+  {id:'ev',n:'昇降機(EV)',c:'#4ade80'},{id:'pv',n:'太陽光(PV)',c:'#38bdf8'},{id:'cg',n:'コージェネ(CG)',c:'#a78bfa'}];
+const lgEl=document.getElementById('legend');
+cats.forEach(c=>{
+  const s=document.createElement('span');s.textContent=c.n;s.style.color=c.c;s.style.background=c.c+'18';
+  s.className='active';
+  s.onclick=()=>{s.classList.toggle('active');
+    document.querySelectorAll(`.sec-${c.id}`).forEach(el=>el.style.display=s.classList.contains('active')?'':'none');
+  };
+  lgEl.appendChild(s);
+});
+
+// Grid
+const grid=document.getElementById('grid');
+const classMap={bl:'bl',rm:'bl',be1:'be',be2:'be',be3:'be',be4:'be',ac1:'ac',ac2:'ac',ac3:'ac',ac4:'ac',v1:'v',v2:'v',l:'l',hw1:'hw',hw2:'hw',ev:'ev',pv:'pv',cg:'cg'};
+SECTIONS.forEach(sec=>{
+  const cls=classMap[sec.id]||'bl';
+  const div=document.createElement('section');div.className=`sec sec-${cls}`;
+  let h=`<h2><span class="badge">${sec.impact}</span>${sec.name}<span class="form-id">${sec.form}</span></h2>`;
+  h+=`<table><tr><th>ID</th><th>パラメータ名</th><th>型/値例</th></tr>`;
+  sec.params.forEach(p=>{
+    h+=`<tr><td>${p.id} ${p.req?'<span class="req">★必須</span>':'<span class="opt">任意</span>'}</td>
+    <td>${p.name}</td><td><span class="val">${p.ex}</span> <span style="color:#475569">${p.type}</span></td></tr>`;
+  });
+  h+=`</table><div class="cnt">${sec.params.length} 項目（必須 ${sec.params.filter(p=>p.req).length}）</div>`;
+  div.innerHTML=h;grid.appendChild(div);
+});
+</script>
+</body>
+</html>
